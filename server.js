@@ -63,19 +63,25 @@ app.get('/inventory/:userId', async (req, res) => {
 });
 
 app.post('/inventory/:userId', async (req, res) => {
-    console.log(`POST inventory endpoint called for userId: ${req.params.userId}`);
+    console.log(`POST inventory endpoint called for userId: ${req.params.userId}, body:`, req.body);
     try {
         const userId = req.params.userId;
         const newPet = req.body.pet;
+        if (!newPet) {
+            return res.status(400).json({ error: "Pet is required" });
+        }
         let inventory = await Inventory.findOne({ userId });
+        console.log(`Found inventory before update:`, inventory);
         if (!inventory) {
             inventory = new Inventory({ userId, pets: [newPet] });
         } else {
             inventory.pets.push(newPet);
         }
         await inventory.save();
+        console.log(`Saved inventory for ${userId}:`, inventory.pets);
         res.json({ success: true, inventory: inventory.pets });
     } catch (err) {
+        console.error("Error saving to MongoDB:", err);
         res.status(500).json({ error: err.message });
     }
 });

@@ -33,7 +33,6 @@ function getRandomPet() {
     return petList[0].name;
 }
 
-// Thêm route gốc để test
 app.get('/', (req, res) => {
     console.log('Root endpoint called');
     res.send('API is running');

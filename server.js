@@ -1,10 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = process.env.PORT; // Không dùng || 3000, để Render quyết định
-app.listen(port, () => {
-    console.log(`API running on port ${port}`);
-});
+const port = process.env.PORT; // Chỉ dùng port từ Render
+
 app.use(express.json());
 
 const mongoURI = process.env.MONGO_URI || "mongodb+srv://anhkhoa12204:Nw82nY5vDcRWveTC@cluster0.wokoo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -34,6 +32,12 @@ function getRandomPet() {
     }
     return petList[0].name;
 }
+
+// Thêm route gốc để test
+app.get('/', (req, res) => {
+    console.log('Root endpoint called');
+    res.send('API is running');
+});
 
 app.get('/spin', async (req, res) => {
     console.log('Spin endpoint called');
@@ -72,4 +76,8 @@ app.post('/inventory/:userId', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+app.listen(port, () => {
+    console.log(`API running on port ${port}`);
 });

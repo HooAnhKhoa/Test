@@ -1,28 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Ensure CORS is included
-
 const app = express();
-const port = process.env.PORT; // Use Render's PORT
+const port = process.env.PORT; // Chỉ dùng port từ Render
 
-// Middleware
 app.use(express.json());
-app.use(cors()); // Enable CORS for Roblox
 
-// MongoDB Connection
 const mongoURI = process.env.MONGO_URI || "mongodb+srv://anhkhoa12204:Nw82nY5vDcRWveTC@cluster0.wokoo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(mongoURI)
     .then(() => console.log("Connected to MongoDB"))
     .catch(err => console.error("MongoDB error:", err));
 
-// Schema and Model
 const inventorySchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
     pets: { type: [String], default: ["CommonDog"] }
 });
 const Inventory = mongoose.model("Inventory", inventorySchema);
 
-// Pet List
 const petList = [
     { name: "CommonDog", rarity: 0.6 },
     { name: "RareCat", rarity: 0.3 },
@@ -40,7 +33,6 @@ function getRandomPet() {
     return petList[0].name;
 }
 
-// Routes
 app.get('/', (req, res) => {
     console.log('Root endpoint called');
     res.send('API is running');
@@ -57,12 +49,15 @@ app.get('/inventory/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         let inventory = await Inventory.findOne({ userId });
+        console.log(`Found inventory in MongoDB:`, inventory); // Log dữ liệu từ MongoDB
         if (!inventory) {
             inventory = new Inventory({ userId });
             await inventory.save();
+            console.log(`Created new inventory for ${userId}:`, inventory);
         }
         res.json({ inventory: inventory.pets });
     } catch (err) {
+        console.error(`Error querying MongoDB:`, err);
         res.status(500).json({ error: err.message });
     }
 });

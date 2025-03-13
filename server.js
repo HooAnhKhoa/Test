@@ -36,11 +36,13 @@ function getRandomPet() {
 }
 
 app.get('/spin', async (req, res) => {
+    console.log('Spin endpoint called');
     const pet = getRandomPet();
     res.json({ pet });
 });
 
 app.get('/inventory/:userId', async (req, res) => {
+    console.log(`Inventory endpoint called for userId: ${req.params.userId}`);
     try {
         const userId = req.params.userId;
         let inventory = await Inventory.findOne({ userId });
@@ -55,6 +57,7 @@ app.get('/inventory/:userId', async (req, res) => {
 });
 
 app.post('/inventory/:userId', async (req, res) => {
+    console.log(`POST inventory endpoint called for userId: ${req.params.userId}`);
     try {
         const userId = req.params.userId;
         const newPet = req.body.pet;
@@ -69,8 +72,4 @@ app.post('/inventory/:userId', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-});
-
-app.listen(port, () => {
-    console.log(`API running on port ${port}`);
 });
